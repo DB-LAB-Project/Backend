@@ -68,6 +68,33 @@ Classroom.leave = (userId, courseCode, result) => {
     })
 }
 
+Classroom.facultyUpload = (upload, result) => {
+    const faculty_id = upload.faculty_id;
+    const class_id = upload.class_id;
+    const course_code = upload.course_code;
+    const title = upload.title;
+    const description = upload.description;
+    const file = upload.file;
+
+    const sql_query = file ? `INSERT INTO FACULTY_UPLOADS VALUES ('${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', '${file.path}')` : `INSERT INTO FACULTY_UPLOADS VALUES ('${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', NULL)`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            result(err, null);
+        }
+        return result(null, upload);
+    });
+}
+
+Classroom.getAllFacultyUploadsInClass = (course_code, result) => {
+    const sql_query = `SELECT * FROM faculty_uploads WHERE COURSE_CODE=${course_code}`;
+    db.query(sql_query, [], (err, res) => {
+       if(err) {
+           return result(err, null);
+       }
+       return result(null, res);
+    });
+}
+
 module.exports = Classroom;
 
 // f2d6aa60-a9f5-445a-8f09-b1002ac80fda - User Id

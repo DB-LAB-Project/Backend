@@ -1,5 +1,6 @@
 const Classroom = require('../models/class');
 
+
 exports.createClass = (req,res) => {
     const newClass = new Classroom({
             subject: req.body.subject,
@@ -71,4 +72,34 @@ exports.leaveClass = (req, res) => {
             return res.json(result1);
         })
     })
+}
+
+exports.postIntoClass = (req, res) => {
+    const upload = {
+        faculty_id: req.body.faculty_id,
+        class_id: req.body.class_id,
+        course_code: req.body.course_code,
+        title: req.body.title,
+        description: req.body.description,
+        file: req.file ? req.file : null
+    }
+    console.log(req.file);
+    Classroom.facultyUpload(upload, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+
+        return res.json(upload);
+    });
+
+}
+
+exports.getFacultyUploads = (req, res) => {
+    const course_code = req.params.course_code;
+    Classroom.getAllFacultyUploadsInClass(course_code, (err, result) => {
+       if(err) {
+           return res.json(err);
+       }
+       return res.json(result);
+    });
 }

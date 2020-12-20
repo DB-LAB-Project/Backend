@@ -14,3 +14,23 @@ exports.sendChat = (req, res) => {
         return res.json(result);
     })
 }
+
+exports.getAllChatsInClass = (req, res) => {
+    const _id = req.params.course_code;
+    Chat.getAllInClass(_id, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    });
+}
+
+exports.deleteChat = (req, res) => {
+    const _id = req.params._id;
+    Chat.delete(_id, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    })
+}

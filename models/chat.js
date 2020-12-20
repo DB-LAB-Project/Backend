@@ -19,12 +19,22 @@ Chat.save = (chat, result) => {
 }
 
 Chat.getAllInClass = (course_code, result) => {
-    const sql_query = `SELECT MESSAGE FROM CHATS WHERE COURSE_CODE='${course_code}'`;
+    const sql_query = `SELECT * FROM CHATS WHERE GROUP_CODE='${course_code}'`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);
         }
         return result(null, res);
+    });
+}
+
+Chat.delete = (_id, result) => {
+    const sql_query = `DELETE FROM CHATS WHERE _id='${_id}'`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, {_id});
     });
 }
 

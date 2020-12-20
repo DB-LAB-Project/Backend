@@ -10,10 +10,7 @@ router.post('/signup', signup);
 
 router.post('/signin', signin);
 
-router.get('/signout', isSignedIn, signout);
+router.get('/signout/:_id', signout);
 
-router.get('/protected', (req, res) => {
-    res.send('Route is protected');
-});
 
 module.exports = router;
