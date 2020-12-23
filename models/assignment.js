@@ -8,11 +8,12 @@ const Assignment = function(assignment) {
     this.course_code = assignment.course_code;
     this.marks = assignment.marks;
     this.due_date = assignment.due_date;
+    this.file = assignment.file;
 }
 
 Assignment.save = (newAssign, result) => {
-    const sql_query = 'INSERT INTO ASSIGNMENTS SET ?';
-    db.query(sql_query, newAssign, (err, res) => {
+    const sql_query = `INSERT INTO ASSIGNMENTS VALUES ('${newAssign._id}', '${newAssign.title}', '${newAssign.description}', '${newAssign.file}', '${newAssign.course_code}', ${newAssign.marks}, NOW(), '${newAssign.due_date}')`;
+    db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);
         }
@@ -32,7 +33,7 @@ Assignment.getById = (_id, result) => {
 }
 
 Assignment.getAllInClass = (course_code, result) => {
-    const sql_query = `SELECT * FROM ASSIGNMENTS WHERE course_code='${course_code}'`;
+    const sql_query = `SELECT _id,title,description,file,course_code,marks,date_format(uploaded_at, '%d-%m-%Y') as upload_date, TIME(uploaded_at) as upload_time,date_format(due_date, '%d-%m-%Y') as due_date, TIME(due_date) as due_date_time FROM ASSIGNMENTS WHERE course_code='${course_code}' ORDER BY uploaded_at DESC`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);
@@ -56,7 +57,7 @@ Assignment.submit = (upload, result) => {
     const assignment_id = upload.assignment_id;
     const file = upload.file;
     console.log(file);
-    const sql_query = file ? `INSERT INTO SUBMISSIONS VALUES('${user_id}', '${assignment_id}', '${file}', NOW(), null)` : `INSERT INTO SUBMISSIONS VALUES('${user_id}', '${assignment_id}', NULL, NOW(), NULL)`;
+    const sql_query = file ? `INSERT INTO SUBMISSIONS VALUES('${user_id}', '${assignment_id}', '${file}', NOW(), null, null)` : `INSERT INTO SUBMISSIONS VALUES('${user_id}', '${assignment_id}', NULL, NOW(), NULL, NULL)`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);
@@ -78,6 +79,16 @@ Assignment.getSubmissionsOfAssignment = (assignment_id, result) => {
         return result(null, res);
     });
 
+}
+
+Assignment.getAllSubmissionsOfUserInClass = (_id, course_code, result) => {
+    const sql_query = `SELECT user_id, assignment_id, file, date_format(submitted_on, '%d-%m-%Y') as submitted_on, TIME(submitted_on) as time, marks, submitted_late FROM submissions WHERE user_id='${_id}' AND assignment_id IN (SELECT assignments._id FROM ASSIGNMENTS WHERE course_code='${course_code}')`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, res);
+    });
 }
 
 module.exports = Assignment;

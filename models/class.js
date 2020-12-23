@@ -86,13 +86,23 @@ Classroom.facultyUpload = (upload, result) => {
 }
 
 Classroom.getAllFacultyUploadsInClass = (course_code, result) => {
-    const sql_query = `SELECT * FROM faculty_uploads WHERE COURSE_CODE=${course_code}`;
+    const sql_query = `SELECT faculty_id,course_code,title,description,file,date_format(uploaded_at, '%d-%m-%Y') as uploaded_on,TIME(uploaded_at) as time FROM faculty_uploads WHERE COURSE_CODE='${course_code}' ORDER BY uploaded_at DESC`;
     db.query(sql_query, [], (err, res) => {
        if(err) {
            return result(err, null);
        }
        return result(null, res);
     });
+}
+
+Classroom.deleteClass = (course_code, result) => {
+    const sql_query = `DELETE FROM class WHERE course_code='${course_code}'`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, {message: "Class deleted Successfully"});
+    })
 }
 
 module.exports = Classroom;

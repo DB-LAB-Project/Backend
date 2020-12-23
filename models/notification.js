@@ -16,6 +16,16 @@ Notification.getUserEmails = (course_code, result) => {
     })
 }
 
+Notification.getUserNumbers = (course_code, result) => {
+    const sql_query = `SELECT phone FROM USERS WHERE _id IN (SELECT user_id FROM enrolled_in WHERE course_code='${course_code}')`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, res);
+    });
+}
+
 // Notification.getClassNotifications = () => {
 //
 // }

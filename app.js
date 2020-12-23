@@ -31,6 +31,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/faculty_uploads', express.static('faculty_uploads'));
+app.use('/assignments', express.static('assignments'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);

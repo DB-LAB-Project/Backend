@@ -1,6 +1,8 @@
 const Assignment = require('../models/assignment');
 const Notification = require('../models/notification');
 
+const client = require('../config/smsSender');
+
 const {mailTransporter} = require('../config/mailer');
 
 exports.postAssignment = (req, res) => {
@@ -9,7 +11,8 @@ exports.postAssignment = (req, res) => {
         description: req.body.description,
         course_code: req.body.course_code,
         marks: req.body.marks,
-        due_date: req.body.due_date
+        due_date: req.body.due_date,
+        file: req.file.path
     });
     Assignment.save(assignment, (err, result) => {
         if(err) {
@@ -34,6 +37,26 @@ exports.postAssignment = (req, res) => {
                 console.log("Email sent successfully");
             });
 
+        });
+        Notification.getUserNumbers(assignment.course_code, (err, result) => {
+            if(err) {
+                console.log(err);
+            }
+            const resNumber = result.map(resu => resu.phone);
+            const toBinding = resNumber.map(number => {
+                    return JSON.stringify({binding_type: "sms", address: `+91${number}`});
+                })
+            const notificationOpts = {
+                toBinding: toBinding,
+                body: `New assignment assigned! ${assignment.title}`
+            }
+            client.notify
+                .services('ISbed373fa9888ddf37e4bcbeb309a81af')
+                .notifications.create(notificationOpts)
+                .then(notification => console.log(notification.sid))
+                .catch(error => console.log(error));
+
+            console.log(toBinding);
         });
         return res.json(result);
     });
@@ -89,6 +112,17 @@ exports.getAssignmentSubmissions = (req, res) => {
             return res.json(err);
         }
         console.log(result);
+        return res.json(result);
+    });
+}
+
+exports.getAllUserSubmissionsInClass = (req, res) => {
+    const _id = req.params._id;
+    const course_code = req.params.course_code;
+    Assignment.getAllSubmissionsOfUserInClass(_id, course_code, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
         return res.json(result);
     });
 }

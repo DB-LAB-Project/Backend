@@ -103,3 +103,13 @@ exports.getFacultyUploads = (req, res) => {
        return res.json(result);
     });
 }
+
+exports.deleteClass = (req, res) => {
+    const course_code = req.params.course_code;
+    Classroom.deleteClass(course_code, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    });
+}

@@ -11,7 +11,7 @@ const generalFacultyStorage = multer.diskStorage({
 
 const assignmentQuestionStorage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'assignment/questions');
+        cb(null, 'assignments/questions');
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname);
@@ -20,7 +20,7 @@ const assignmentQuestionStorage = multer.diskStorage({
 
 const submissionStorage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'assignment/submissions');
+        cb(null, 'assignments/submissions');
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname);

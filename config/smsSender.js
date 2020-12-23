@@ -7,7 +7,7 @@ const client = new twilio(accountSid, authToken);
 
 // client.messages.create({
 //     body: 'Hello From Node',
-//     to: '+919902510073',
+//     to: ['+919902510073', '+919902510073'],
 //     from: '+12093406727'
 // }).then(message => console.log(message.sid));
 
@@ -19,12 +19,14 @@ const client = new twilio(accountSid, authToken);
 //     body: 'New Assignment Assigned',
 // };
 
-const sendSMS = (notificationOpts) => {
-    client.notify
-        .services('ISbed373fa9888ddf37e4bcbeb309a81af')
-        .notifications.create(notificationOpts)
-        .then(notification => console.log(notification.sid))
-        .catch(error => console.log(error));
-}
+// const sendSMS = (notificationOpts) => {
+//     client.notify
+//         .services('ISbed373fa9888ddf37e4bcbeb309a81af')
+//         .notifications.create(notificationOpts)
+//         .then(notification => console.log(notification.sid))
+//         .catch(error => console.log(error));
+// }
+
+module.exports = client;
 
 
