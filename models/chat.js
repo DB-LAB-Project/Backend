@@ -9,8 +9,8 @@ const Chat = function(chat) {
 }
 
 Chat.save = (chat, result) => {
-    const sql_query = 'INSERT INTO CHATS SET ?';
-    db.query(sql_query, chat, (err, res) => {
+    const sql_query = `INSERT INTO CHATS VALUES ('${chat._id}', '${chat.message}', '${chat.sent_by}', NOW(), '${chat.group_code}')`;
+    db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);
         }
@@ -19,7 +19,7 @@ Chat.save = (chat, result) => {
 }
 
 Chat.getAllInClass = (course_code, result) => {
-    const sql_query = `SELECT * FROM CHATS WHERE GROUP_CODE='${course_code}'`;
+    const sql_query = `SELECT * FROM CHATS WHERE GROUP_CODE='${course_code}' ORDER BY SENT_ON`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);

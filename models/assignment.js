@@ -71,7 +71,7 @@ Assignment.submit = (upload, result) => {
 }
 
 Assignment.getSubmissionsOfAssignment = (assignment_id, result) => {
-    const sql_query = `SELECT _id,usn,name,date_format(submitted_on, '%d-%m-%Y') as submitted_on,TIME(SUBMITTED_ON) as time,marks FROM USERS,SUBMISSIONS WHERE USERS._id IN (SELECT USER_ID FROM SUBMISSIONS WHERE ASSIGNMENT_ID='${assignment_id}') AND USERS._id=SUBMISSIONS.user_id`;
+    const sql_query = `SELECT USERS._id,usn,name,date_format(submitted_on, '%d-%m-%Y') as submitted_on,TIME(SUBMITTED_ON) as time, SUBMISSIONS.file, SUBMISSIONS.marks, SUBMISSIONS.submitted_late FROM USERS,SUBMISSIONS WHERE USERS._id IN (SELECT USER_ID FROM SUBMISSIONS WHERE ASSIGNMENT_ID='${assignment_id}') AND USERS._id=SUBMISSIONS.user_id AND SUBMISSIONS.assignment_id='${assignment_id}'`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);

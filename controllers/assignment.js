@@ -1,5 +1,6 @@
 const Assignment = require('../models/assignment');
 const Notification = require('../models/notification');
+const User = require('../models/user');
 
 const client = require('../config/smsSender');
 
@@ -48,7 +49,7 @@ exports.postAssignment = (req, res) => {
                 })
             const notificationOpts = {
                 toBinding: toBinding,
-                body: `New assignment assigned! ${assignment.title}`
+                body: `${assignment.course_code}: New assignment assigned! ${assignment.title}`
             }
             client.notify
                 .services('ISbed373fa9888ddf37e4bcbeb309a81af')
@@ -76,17 +77,58 @@ exports.scoreAssignments = (req, res) => {
     const user_id = req.body.user_id;
     const assignment_id = req.body.assignment_id;
     const marks = req.body.marks;
-    Assignment.score(marks, user_id, assignment_id, (err, result) => {
-       if(err) {
-           res.json(err);
-       }
-       Assignment.getSubmissionsOfAssignment(assignment_id, (err, result1) => {
-           if(err) {
-               res.json(err);
-           }
-           return res.json(result1);
-       });
-    });
+    console.log(user_id, assignment_id, marks);
+    Assignment.getById(assignment_id, (err, result3) => {
+        if(err) {
+            return res.json(err);
+        }
+        Assignment.score(marks, user_id, assignment_id, (err, result) => {
+            if(err) {
+                res.json(err);
+            }
+            Assignment.getSubmissionsOfAssignment(assignment_id, (err, result1) => {
+                if(err) {
+                    res.json(err);
+                }
+                User.getById(user_id, (err, result2) => {
+                    if(err) {
+                        return res.json(err);
+                    }
+                    const emailList = result2[0].Email;
+                    const subject = `${result3[0].course_code}: Assignment Scored! ${result3[0].title}`;
+                    const mailDetails = {
+                        from: 'lms554896@gmail.com',
+                        to: emailList,
+                        subject: subject,
+                        text: `Your submission to the assignment ${result3[0].title} has been scored. You have been awarded ${marks}/${result3[0].marks}`
+                    };
+                    mailTransporter.sendMail(mailDetails, (err) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        console.log("Email sent successfully");
+                    });
+
+                        const resNumber = result2[0].Phone;
+                        const toBinding = JSON.stringify({binding_type: "sms", address: `+91${resNumber}`});
+                        const notificationOpts = {
+                            toBinding: toBinding,
+                            body: `${result3[0].course_code}: Assignment Scored! ${result3[0].title}`
+                        }
+                        client.notify
+                            .services('ISbed373fa9888ddf37e4bcbeb309a81af')
+                            .notifications.create(notificationOpts)
+                            .then(notification => console.log(notification.sid))
+                            .catch(error => console.log(error));
+
+                        console.log(toBinding);
+
+                });
+
+                return res.json(result1);
+            });
+        });
+    })
 }
 
 exports.submitAssignment = (req, res) => {
@@ -96,7 +138,7 @@ exports.submitAssignment = (req, res) => {
         assignment_id: req.body.assignment_id,
         file: req.file.path
     }
-
+    console.log(upload);
     Assignment.submit(upload, (err, result) => {
         if(err) {
             return res.json(err);

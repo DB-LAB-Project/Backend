@@ -1,4 +1,8 @@
 const Classroom = require('../models/class');
+const Notification = require('../models/notification')
+
+const {mailTransporter} = require('../config/mailer');
+const client = require('../config/smsSender');
 
 
 exports.createClass = (req,res) => {
@@ -88,7 +92,47 @@ exports.postIntoClass = (req, res) => {
         if(err) {
             return res.json(err);
         }
+        Notification.getUserEmails(upload.course_code, (err, result) => {
+            if(err) {
+                return res.json(err);
+            }
+            console.log(result);
+            const emailList = result.map(resu => resu.EMAIL);
+            const subject = `${upload.course_code}: New Material Posted! ${upload.title}`;
+            const mailDetails = {
+                from: 'lms554896@gmail.com',
+                to: emailList,
+                subject: subject,
+                text: upload.description
+            };
+            mailTransporter.sendMail(mailDetails, (err) => {
+                if(err) {
+                    console.log(err);
+                }
+                console.log("Email sent successfully");
+            });
 
+        });
+        Notification.getUserNumbers(upload.course_code, (err, result) => {
+            if(err) {
+                console.log(err);
+            }
+            const resNumber = result.map(resu => resu.phone);
+            const toBinding = resNumber.map(number => {
+                return JSON.stringify({binding_type: "sms", address: `+91${number}`});
+            })
+            const notificationOpts = {
+                toBinding: toBinding,
+                body: `${upload.course_code}: New Material Posted! ${upload.title}`
+            }
+            client.notify
+                .services('ISbed373fa9888ddf37e4bcbeb309a81af')
+                .notifications.create(notificationOpts)
+                .then(notification => console.log(notification.sid))
+                .catch(error => console.log(error));
+
+            console.log(toBinding);
+        });
         return res.json(upload);
     });
 

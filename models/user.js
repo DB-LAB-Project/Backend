@@ -124,7 +124,7 @@ User.delete = (_id, result) => {
 }
 
 User.getAllUsersInClass = (courseCode, result) => {
-    const sql_query = `SELECT Name,USN,Phone,Email,Role FROM USERS WHERE _id IN (SELECT user_id FROM ENROLLED_IN WHERE course_code='${courseCode}')`;
+    const sql_query = `SELECT _id,name,usn,phone,email,role FROM USERS WHERE _id IN (SELECT user_id FROM ENROLLED_IN WHERE course_code='${courseCode}')`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             return result(err, null);

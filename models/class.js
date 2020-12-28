@@ -85,6 +85,24 @@ Classroom.facultyUpload = (upload, result) => {
     });
 }
 
+Classroom.facultyUploadEdit = (upload, result) => {
+    const faculty_id = upload.faculty_id;
+    const class_id = upload.class_id;
+    const course_code = upload.course_code;
+    const title = upload.title;
+    const description = upload.description;
+    const link = upload.link;
+    const file = upload.file;
+
+    const sql_query = file ? `UPDATE FACULTY_UPLOADS SET faculty_id='${faculty_id}', class_id='${class_id}', course_code='${course_code}', uploaded_at=NOW(), title='${title}', description='${description}', link=${link}, file='${file.path}'` : `UPDATE FACULTY_UPLOADS SET faculty_id='${faculty_id}', class_id='${class_id}', course_code='${course_code}', uploaded_at=NOW(), title='${title}', description='${description}', link=${link}, file=NULL`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            result(err, null);
+        }
+        return result(null, upload);
+    });
+}
+
 Classroom.getAllFacultyUploadsInClass = (course_code, result) => {
     const sql_query = `SELECT faculty_id,course_code,title,description,file,date_format(uploaded_at, '%d-%m-%Y') as uploaded_on,TIME(uploaded_at) as time FROM faculty_uploads WHERE COURSE_CODE='${course_code}' ORDER BY uploaded_at DESC`;
     db.query(sql_query, [], (err, res) => {

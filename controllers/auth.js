@@ -17,18 +17,17 @@ exports.signup = (req, res) => {
         if(err) {
             return res.json(err);
         }
+        console.log(result.length);
         if(result.length !== 0) {
             return res.json({
                 error: "Email Already exists!! Use another email"
             });
         }
-    })
-
-    User.save(user, (err, data) => {
-        if(err) return res.json({error: err});
-        res.json(data);
-    })
-
+        User.save(user, (err, data) => {
+            if(err) return res.json({error: err});
+            res.json(data);
+        })
+    });
 }
 
 exports.signin = (req, res) => {
