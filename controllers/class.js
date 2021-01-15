@@ -184,3 +184,20 @@ exports.deletePost = (req, res) => {
         return res.json(result);
     })
 }
+
+exports.getUnreadNotifications = (req, res) => {
+    const classList = req.query.array.split(',');
+    const user_id = req.query.user_id;
+    const final_count = [];
+    classList.map((class_id, idx) => {
+        Classroom.getUnreadNotifications(user_id, class_id, (err, result) => {
+            if(err) {
+                return res.json(err);
+            }
+            final_count.push(result);
+            if(idx === classList.length - 1) {
+                return res.json(final_count);
+            }
+        })
+    });
+}

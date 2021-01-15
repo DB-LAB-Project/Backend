@@ -132,6 +132,16 @@ Classroom.deletePost = (_id, result) => {
     });
 }
 
+Classroom.getUnreadNotifications = (user_id, course_code, result) => {
+    const sql_query = `select count(*) as count from notifications where course_code='${course_code}' and created_at>(select get_last_active('${user_id}'))`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, {course_code, count: res[0].count});
+    });
+}
+
 module.exports = Classroom;
 
 // f2d6aa60-a9f5-445a-8f09-b1002ac80fda - User Id

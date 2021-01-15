@@ -2,7 +2,7 @@ const express = require('express');
 
 const {generalFacultyUpload} = require('../config/fileUpload');
 
-const {createClass, enroll, getClassByCode, getClassById, getClassesOfUser, leaveClass, postIntoClass, getFacultyUploads, deleteClass, deletePost, editFacultyPost} = require('../controllers/class');
+const {createClass, enroll, getClassByCode, getClassById, getClassesOfUser, leaveClass, postIntoClass, getFacultyUploads, deleteClass, deletePost, editFacultyPost, getUnreadNotifications} = require('../controllers/class');
 
 const router = express.Router();
 
@@ -19,6 +19,8 @@ router.post('/post', generalFacultyUpload.single('attachment'), postIntoClass);
 router.get('/get-my-classes/:user_id', getClassesOfUser);
 
 router.get('/get-faculty-uploads/:course_code', getFacultyUploads);
+
+router.get('/get-unread-notifications', getUnreadNotifications);
 
 router.put('/edit-post', generalFacultyUpload.single('attachment'), editFacultyPost);
 

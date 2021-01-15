@@ -174,15 +174,18 @@ exports.getUnsubmittedAssignmentsCount = (req, res) => {
     const user_id = req.query.user_id;
     let final_count = [];
     console.log(classList);
-    classList.map(class_id => {
+    classList.map((class_id, idx) => {
         Assignment.countUnSubmittedInClass(user_id, class_id, (err, result) => {
             if(err) {
                 // return res.json(err);
             }
             final_count.push(result);
             console.log(final_count);
+            if(idx === classList.length - 1) {
+                return res.json(final_count);
+            }
         });
     });
-    return res.json(final_count);
+    // return res.json(final_count);
 }
 
