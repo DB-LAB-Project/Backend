@@ -91,4 +91,14 @@ Assignment.getAllSubmissionsOfUserInClass = (_id, course_code, result) => {
     });
 }
 
+Assignment.countUnSubmittedInClass = (user_id, course_code, result) => {
+    const sql_query = `select count(*) - (select count(*) from submissions where assignment_id in (select _id from assignments where course_code='${course_code}') and user_id='${user_id}') as count from assignments where course_code='${course_code}'`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, {course_code, count: res[0]["count"]});
+    });
+}
+
 module.exports = Assignment;

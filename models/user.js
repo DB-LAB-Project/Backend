@@ -13,6 +13,7 @@ const User = function(user) {
                         .update(user.password)
                         .digest('hex');
     this.role = Number.parseInt(user.role);
+    this.guardian_phone = user.guardian_phone;
 
 }
 

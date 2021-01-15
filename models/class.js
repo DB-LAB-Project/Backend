@@ -69,6 +69,7 @@ Classroom.leave = (userId, courseCode, result) => {
 }
 
 Classroom.facultyUpload = (upload, result) => {
+    const _id = uuidv4();
     const faculty_id = upload.faculty_id;
     const class_id = upload.class_id;
     const course_code = upload.course_code;
@@ -76,7 +77,7 @@ Classroom.facultyUpload = (upload, result) => {
     const description = upload.description;
     const file = upload.file;
 
-    const sql_query = file ? `INSERT INTO FACULTY_UPLOADS VALUES ('${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', '${file.path}')` : `INSERT INTO FACULTY_UPLOADS VALUES ('${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', NULL)`;
+    const sql_query = file ? `INSERT INTO FACULTY_UPLOADS VALUES ('${_id}', '${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', '${file.path}')` : `INSERT INTO FACULTY_UPLOADS VALUES ('${_id}', '${faculty_id}', '${class_id}', '${course_code}', NOW(), '${title}', '${description}', NULL)`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
             result(err, null);
@@ -86,25 +87,23 @@ Classroom.facultyUpload = (upload, result) => {
 }
 
 Classroom.facultyUploadEdit = (upload, result) => {
-    const faculty_id = upload.faculty_id;
-    const class_id = upload.class_id;
-    const course_code = upload.course_code;
+    const _id = upload._id;
     const title = upload.title;
     const description = upload.description;
-    const link = upload.link;
+    // const link = upload.link;
     const file = upload.file;
 
-    const sql_query = file ? `UPDATE FACULTY_UPLOADS SET faculty_id='${faculty_id}', class_id='${class_id}', course_code='${course_code}', uploaded_at=NOW(), title='${title}', description='${description}', link=${link}, file='${file.path}'` : `UPDATE FACULTY_UPLOADS SET faculty_id='${faculty_id}', class_id='${class_id}', course_code='${course_code}', uploaded_at=NOW(), title='${title}', description='${description}', link=${link}, file=NULL`;
+    const sql_query = file ? `UPDATE FACULTY_UPLOADS SET title='${title}', description='${description}', file='${file}' WHERE _id='${_id}'` : `UPDATE FACULTY_UPLOADS SET title='${title}', description='${description}', file=NULL WHERE _id='${_id}'`;
     db.query(sql_query, [], (err, res) => {
         if(err) {
-            result(err, null);
+            return result(err, null);
         }
         return result(null, upload);
     });
 }
 
 Classroom.getAllFacultyUploadsInClass = (course_code, result) => {
-    const sql_query = `SELECT faculty_id,course_code,title,description,file,date_format(uploaded_at, '%d-%m-%Y') as uploaded_on,TIME(uploaded_at) as time FROM faculty_uploads WHERE COURSE_CODE='${course_code}' ORDER BY uploaded_at DESC`;
+    const sql_query = `SELECT _id,faculty_id,course_code,title,description,file,date_format(uploaded_at, '%d-%m-%Y') as uploaded_on,TIME(uploaded_at) as time FROM faculty_uploads WHERE COURSE_CODE='${course_code}' ORDER BY uploaded_at DESC`;
     db.query(sql_query, [], (err, res) => {
        if(err) {
            return result(err, null);
@@ -121,6 +120,16 @@ Classroom.deleteClass = (course_code, result) => {
         }
         return result(null, {message: "Class deleted Successfully"});
     })
+}
+
+Classroom.deletePost = (_id, result) => {
+    const sql_query = `DELETE FROM FACULTY_UPLOADS WHERE _id='${_id}'`;
+    db.query(sql_query, [], (err, res) => {
+       if(err) {
+           return result(err, null);
+       }
+       return result(null, {_id});
+    });
 }
 
 module.exports = Classroom;

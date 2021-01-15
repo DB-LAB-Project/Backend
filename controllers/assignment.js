@@ -169,3 +169,20 @@ exports.getAllUserSubmissionsInClass = (req, res) => {
     });
 }
 
+exports.getUnsubmittedAssignmentsCount = (req, res) => {
+    const classList = req.query.array.split(',');
+    const user_id = req.query.user_id;
+    let final_count = [];
+    console.log(classList);
+    classList.map(class_id => {
+        Assignment.countUnSubmittedInClass(user_id, class_id, (err, result) => {
+            if(err) {
+                // return res.json(err);
+            }
+            final_count.push(result);
+            console.log(final_count);
+        });
+    });
+    return res.json(final_count);
+}
+

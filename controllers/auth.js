@@ -10,6 +10,7 @@ exports.signup = (req, res) => {
         usn: req.body.USN,
         password: req.body.password,
         phone: req.body.phone,
+        guardian_phone: req.body.guardianPhone,
         role: req.body.role,
     });
 

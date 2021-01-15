@@ -157,3 +157,30 @@ exports.deleteClass = (req, res) => {
         return res.json(result);
     });
 }
+
+exports.editFacultyPost = (req, res) => {
+    const upload = {
+        _id: req.body._id,
+        title: req.body.title,
+        description: req.body.description,
+        file: req.file ? req.file.path : (req.body.file === 'null' ? null : req.body.file)
+    }
+    console.log(upload);
+    Classroom.facultyUploadEdit(upload, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    });
+
+}
+
+exports.deletePost = (req, res) => {
+    const _id = req.params._id;
+    Classroom.deletePost(_id, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    })
+}
