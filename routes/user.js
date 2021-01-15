@@ -11,6 +11,6 @@ router.get('/get_by_id/:id', getById);
 
 router.post('/update', updateUser);
 
-router.get('/get_all_in_class/:course_code', getAllUsersInClass)
+router.get('/get-all-in-class/:course_code', getAllUsersInClass)
 
 module.exports = router;

@@ -3,6 +3,7 @@ const Notification = require('../models/notification');
 const User = require('../models/user');
 
 const client = require('../config/smsSender');
+const wClient = require('../config/whatsappSender');
 
 const {mailTransporter} = require('../config/mailer');
 
@@ -58,7 +59,38 @@ exports.postAssignment = (req, res) => {
                 .catch(error => console.log(error));
 
             console.log(toBinding);
+            const wResNumber = resNumber.map(number => `whatsapp:+91${number}`);
+            client.messages.create({
+                from: 'whatsapp:+14155238886',
+                to: wResNumber,
+                body: `${assignment.course_code}: New assignment assigned! ${assignment.title}`
+            }).then(message => console.log(message.sid)).catch(err => console.log(err));
         });
+        Notification.getParentsNumber(assignment.course_code, (err, result3) => {
+            if(err) {
+                console.log(err);
+            }
+            let resNumber = result3.map(resu => {
+                return resu.guardian_phone;
+            });
+
+            resNumber = resNumber.filter(num => num !== null);
+            console.log(resNumber);
+            const toBinding = resNumber.map(number => {
+                return JSON.stringify({binding_type: "sms", address: `+91${number}`});
+            })
+            const notificationOpts = {
+                toBinding: toBinding,
+                body: `${assignment.course_code}: New assignment assigned! ${assignment.title}`
+            }
+            client.notify
+                .services('ISbed373fa9888ddf37e4bcbeb309a81af')
+                .notifications.create(notificationOpts)
+                .then(notification => console.log(notification.sid))
+                .catch(error => console.log(error));
+
+            console.log(toBinding);
+        })
         return res.json(result);
     });
 }
@@ -109,8 +141,8 @@ exports.scoreAssignments = (req, res) => {
                         console.log("Email sent successfully");
                     });
 
-                        const resNumber = result2[0].Phone;
-                        const toBinding = JSON.stringify({binding_type: "sms", address: `+91${resNumber}`});
+                        const resNumber = [result2[0].Phone, result2[0].guardian_phone];
+                        const toBinding = resNumber.map(number => JSON.stringify({binding_type: "sms", address: `+91${number}`}));
                         const notificationOpts = {
                             toBinding: toBinding,
                             body: `${result3[0].course_code}: Assignment Scored! ${result3[0].title}`
@@ -120,9 +152,13 @@ exports.scoreAssignments = (req, res) => {
                             .notifications.create(notificationOpts)
                             .then(notification => console.log(notification.sid))
                             .catch(error => console.log(error));
-
+                    const wResNumber = resNumber.map(number => `whatsapp:+91${number}`);
+                    client.messages.create({
+                        from: 'whatsapp:+14155238886',
+                        to: wResNumber,
+                        body: `${result3[0].course_code}: Assignment Scored! ${result3[0].title}`
+                    }).then(message => console.log(message.sid)).catch(err => console.log(err));
                         console.log(toBinding);
-
                 });
 
                 return res.json(result1);
@@ -187,5 +223,19 @@ exports.getUnsubmittedAssignmentsCount = (req, res) => {
         });
     });
     // return res.json(final_count);
+}
+
+exports.deleteAssignment = (req, res) => {
+    const _id = req.params._id;
+    Assignment.deleteAssignment(_id, (err, result) => {
+        if(err) {
+            return res.json(err);
+        }
+        return res.json(result);
+    })
+}
+
+const test = (assignment) => {
+
 }
 

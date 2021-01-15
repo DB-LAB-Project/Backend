@@ -1,6 +1,6 @@
 const express = require('express');
 
-const {postAssignment, getMyAssignments, getAssignmentSubmissions, scoreAssignments, submitAssignment, getAllUserSubmissionsInClass, getUnsubmittedAssignmentsCount} = require('../controllers/assignment');
+const {postAssignment, getMyAssignments, getAssignmentSubmissions, scoreAssignments, submitAssignment, getAllUserSubmissionsInClass, getUnsubmittedAssignmentsCount, deleteAssignment} = require('../controllers/assignment');
 
 const {facultyAssignmentUpload, submissionsUpload} = require('../config/fileUpload');
 
@@ -19,5 +19,7 @@ router.post('/submit', submissionsUpload.single('submission'), submitAssignment)
 router.get('/get-all-user-submissions/:course_code/:_id', getAllUserSubmissionsInClass);
 
 router.get('/get-unsubmitted-count', getUnsubmittedAssignmentsCount);
+
+router.delete('/delete/:_id', deleteAssignment);
 
 module.exports = router;

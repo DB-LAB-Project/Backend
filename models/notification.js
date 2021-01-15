@@ -26,6 +26,16 @@ Notification.getUserNumbers = (course_code, result) => {
     });
 }
 
+Notification.getParentsNumber = (course_code, result) => {
+    const sql_query = `SELECT guardian_phone FROM student_contact_table WHERE _id IN (SELECT user_id FROM enrolled_in WHERE course_code='${course_code}')`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err ,null);
+        }
+        return result(null, res);
+    })
+}
+
 // Notification.getClassNotifications = () => {
 //
 // }

@@ -101,4 +101,14 @@ Assignment.countUnSubmittedInClass = (user_id, course_code, result) => {
     });
 }
 
+Assignment.deleteAssignment = (_id, result) => {
+    const sql_query = `DELETE FROM ASSIGNMENTS WHERE _id='${_id}'`;
+    db.query(sql_query, [], (err, res) => {
+        if(err) {
+            return result(err, null);
+        }
+        return result(null, _id);
+    })
+}
+
 module.exports = Assignment;

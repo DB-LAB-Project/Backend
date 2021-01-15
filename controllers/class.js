@@ -130,6 +130,12 @@ exports.postIntoClass = (req, res) => {
                 .notifications.create(notificationOpts)
                 .then(notification => console.log(notification.sid))
                 .catch(error => console.log(error));
+            const wResNumber = resNumber.map(num => `whatsapp:+91${num}`);
+            client.messages.create({
+                from: 'whatsapp:+14155238886',
+                to: wResNumber,
+                body: `${upload.course_code}: New Material Posted! ${upload.title}`
+            }).then(message => console.log(message.sid)).catch(err => console.log(err));
 
             console.log(toBinding);
         });

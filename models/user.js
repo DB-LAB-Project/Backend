@@ -62,7 +62,7 @@ User.authenticate = function(email, password, result) {
             }
             else {
                 const error = {
-                    error: "Email and password do not match",
+                    error: "Email or password do not match",
                 };
                 result(error, null);
                 return;
