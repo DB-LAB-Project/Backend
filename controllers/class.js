@@ -20,17 +20,26 @@ exports.createClass = (req,res) => {
 
 exports.enroll = (req, res) => {
     const {_id, course_code} = req.body;
-    Classroom.enroll(_id, course_code, (err, result) => {
+    Classroom.getByCode(course_code, (err, result2) => {
         if(err) {
             return res.json(err);
         }
-        Classroom.getAllClassByUserId(_id, (err, result1) => {
+        if(result2.length === 0) {
+            return res.json({error: "Class with the given course code does not exist! Please check the code"});
+        }
+        Classroom.enroll(_id, course_code, (err, result) => {
             if(err) {
                 return res.json(err);
             }
-            return res.json(result1);
+            Classroom.getAllClassByUserId(_id, (err, result1) => {
+                if(err) {
+                    return res.json(err);
+                }
+                return res.json(result1);
+            })
         })
     })
+
 }
 
 exports.getClassByCode = (req,res) => {
